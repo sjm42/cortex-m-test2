@@ -4,13 +4,20 @@ set -e
 
 usage()
 {
-	echo "Usage: $0 b|k|n|r|d b|c|f|d|n"
-	echo "  Hardware: b = Blue pill, k = Blackpill, n = Nucleo F411, r = nRf52840-dongle, d = nrf52840-Dk, s = nRf52840-dongle-s140"
+	echo "Usage: $0 b|k|k401|n|r|d|s b|c|f|d|n"
+	echo "  Hardware: b = Blue pill, k = Blackpill F411, k401 = Blackpill F401CC, n = Nucleo F411, r = nRf52840-dongle, d = nrf52840-Dk, s = nRf52840-dongle-s140"
 	echo "  Operation: b = build, c = clippy, f = cargo flash, d = dfu flash, n = nrfdfu flash"
+    echo "  Probe flash speed: PROBE_RS_SPEED in kHz (default: 100)"
     exit 1
 }
 
 case "$1" in
+k401|K401)
+    feat="black_pill_f401"
+    tgt="thumbv7em-none-eabihf"
+    chip="STM32F401CC"
+    dfu_opt="-a 0 -s 0x8000000"
+    ;;
 K*|bla*|k*)
     feat="black_pill"
     tgt="thumbv7em-none-eabihf"
@@ -60,7 +67,7 @@ C*|c*)
     ;;
 F*|f*)
     set -x
-    cargo flash $flags --chip $chip
+    cargo flash $flags --chip "$chip" --protocol swd --speed "${PROBE_RS_SPEED:-100}"
     ;;
 D*|d*)
     if [ $feat = nrf52840 ]

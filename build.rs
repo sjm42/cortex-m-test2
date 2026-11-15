@@ -8,15 +8,14 @@
 //! updating `memory.x` ensures a rebuild of the application with the
 //! new memory settings.
 
-use std::env;
-use std::fs::File;
-use std::io::Write;
-use std::path::PathBuf;
+use std::{env, fs::File, io::Write, path::PathBuf};
 
 fn main() {
     let mut memory_x = None;
     if let Some(_feature) = env::var_os("CARGO_FEATURE_STM32F103") {
         memory_x = Some(include_bytes!("memory-stm32f103.x").to_vec());
+    } else if let Some(_feature) = env::var_os("CARGO_FEATURE_STM32F401") {
+        memory_x = Some(include_bytes!("memory-stm32f401.x").to_vec());
     } else if let Some(_feature) = env::var_os("CARGO_FEATURE_STM32F411") {
         memory_x = Some(include_bytes!("memory-stm32f411.x").to_vec());
     } else if let Some(_feature) = env::var_os("CARGO_FEATURE_NRF52840_DONGLE") {
